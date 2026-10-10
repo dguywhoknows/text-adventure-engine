@@ -1,4 +1,4 @@
-:root { --accent: #b4532a; --story: 'Cormorant Garamond', Georgia, serif; }
+:root { --accent: #9a4f2a; --story: 'Cormorant Garamond', Georgia, serif; }
 .setup { max-width: 440px; margin: 48px auto; display: grid; gap: 12px; }
 .game { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; max-width: 1200px; }
 .story-card { display: flex; flex-direction: column; height: calc(100vh - 120px); min-height: 520px; padding: 0; overflow: hidden; }

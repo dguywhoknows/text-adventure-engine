@@ -1,4 +1,4 @@
-/* core.js — game data and rules for the text adventure engine (pure, unit-tested). */
+/* Game data and rules for the text adventure engine (pure, unit-tested). */
 
 /* ---------- world data ---------- */
 var THEMES = {
