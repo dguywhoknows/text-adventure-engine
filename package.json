@@ -1,0 +1,16 @@
+{
+  "name": "text-adventure-engine",
+  "version": "2.0.0",
+  "private": true,
+  "description": "A roguelike where a real game engine owns the rules and an AI Dungeon Master narrates every moment.",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "test": "node tests/run-node.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dguywhoknows/text-adventure-engine.git"
+  },
+  "homepage": "https://dguywhoknows.github.io/text-adventure-engine/",
+  "license": "MIT"
+}

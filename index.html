@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dungeon Narrator</title>
+<meta name="description" content="A roguelike where a real game engine owns the rules and an AI Dungeon Master narrates every moment.">
+<meta name="app-repo" content="https://github.com/dguywhoknows/text-adventure-engine">
+<meta name="app-version" content="2.0.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b4532a'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Arial%2CHelvetica%2Csans-serif' font-weight='700' font-size='13' fill='white'%3EDN%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo" aria-hidden="true">DN</span><div><h1>Dungeon Narrator</h1><p>The engine rolls the dice. The AI tells the story.</p></div></div>
+  <nav class="topnav" data-nav aria-label="Pages"></nav>
+  <div class="top-actions"><a class="btn ghost sm" href="https://github.com/dguywhoknows/text-adventure-engine" target="_blank" rel="noopener">GitHub</a><span data-ai-badge></span></div>
+</header>
+<div class="page active" data-page="play" data-title="Play">
+
+<div id="setup" class="setup card">
+  <h2>New adventure</h2>
+  <label>Hero name<input class="input" id="heroName" value="Rowan"></label>
+  <label>World<select id="theme">
+    <option value="crypt">Forgotten Crypt (dark fantasy)</option>
+    <option value="derelict">Derelict Starship (sci-fi horror)</option>
+    <option value="mansion">Hollow Mansion (gothic mystery)</option>
+  </select></label>
+  <label>Class<select id="heroClass"><option value="warrior">Warrior (tough)</option><option value="rogue">Rogue (critical hits)</option><option value="mage">Mage (fireball)</option></select></label>
+  <label>Seed <span class="muted small">(same seed = same dungeon)</span><input class="input mono" id="seed"></label>
+  <button class="btn primary" id="begin">Enter the dungeon</button>
+</div>
+
+<main id="game" class="game hidden">
+  <section class="card story-card">
+    <div id="log" class="log" aria-live="polite"></div>
+    <div id="actions" class="actions"></div>
+    <form id="freeForm" class="row free">
+      <input class="input grow" id="free" placeholder="Or try anything… e.g. “throw my torch at the cobwebs”" autocomplete="off">
+      <button class="btn" type="submit">Act</button>
+    </form>
+  </section>
+  <aside class="stack">
+    <div class="card">
+      <div class="row between"><div><h2 style="margin:0" id="heroTitle">Rowan</h2><div class="small muted" id="heroCls"></div></div><span class="tag" id="lvl">Lv 1</span></div>
+      <div class="meter"><span>HP</span><div class="bar hp"><span id="hpBar"></span></div><b id="hpText"></b></div>
+      <div class="meter"><span>XP</span><div class="bar xp"><span id="xpBar"></span></div><b id="xpText"></b></div>
+      <div class="row small" style="margin-top:8px;gap:14px"><span>🪙 <b id="gold">0</b></span><span>AC <b id="ac">10</b></span><span>⚔ +<b id="atk">0</b></span><span>👣 <b id="steps">0</b></span></div>
+    </div>
+    <div class="card hidden" id="enemyCard">
+      <div class="row between"><h2 style="margin:0" id="enemyName"></h2><span class="tag bad" id="enemyTier"></span></div>
+      <div class="meter"><span>HP</span><div class="bar ehp"><span id="ehpBar"></span></div><b id="ehpText"></b></div>
+    </div>
+    <div class="card"><h3>Inventory</h3><div id="inv" class="inv"></div></div>
+    <div class="card"><h3>Map</h3><div id="map"></div></div>
+  </aside>
+</main>
+</div>
+<div class="page" data-page="heroes" data-title="Heroes">
+<main class="stack">
+  <div class="page-head"><div><h2>Hero classes</h2><p>Each class trades health, armor and damage differently and has its own ability.</p></div></div>
+  <div class="grid cols-3" id="heroCards"></div>
+</main>
+</div>
+
+<div class="page" data-page="bestiary" data-title="Bestiary">
+<main class="stack">
+  <div class="page-head"><div><h2>Bestiary</h2><p id="bProgress"></p></div><select id="bWorld" style="width:auto"><option value="*">All worlds</option><option value="crypt">Forgotten Crypt</option><option value="derelict">Derelict Starship</option><option value="mansion">Hollow Mansion</option></select></div>
+  <div class="grid cols-3" id="bestiary"></div>
+</main>
+</div>
+
+<div class="page" data-page="chronicle" data-title="Chronicle">
+<main class="stack">
+  <div class="kpis" id="cKpis"></div>
+  <div class="card"><h2>Leaderboard</h2><div id="leaderboard"></div></div>
+  <div class="card">
+    <div class="row between"><h2 style="margin:0">All runs</h2><select id="cFilter" style="width:auto"><option value="*">All</option><option value="won">Victories</option><option value="lost">Defeats</option><option value="crypt">Forgotten Crypt</option><option value="derelict">Derelict Starship</option><option value="mansion">Hollow Mansion</option></select></div>
+    <div class="table-wrap"><table id="runs"></table></div>
+  </div>
+</main>
+</div>
+
+<div class="page" data-page="achievements" data-title="Achievements">
+<main class="stack">
+  <div class="page-head"><div><h2>Achievements</h2></div></div>
+  <div id="achProgress"></div>
+  <div class="grid cols-2" id="achGrid"></div>
+</main>
+</div>
+
+<div class="page" data-page="settings" data-title="Settings"></div>
+<script src="src/lib/dom.js"></script>
+<script src="src/lib/ai.js"></script>
+<script src="src/lib/router.js"></script>
+<script src="src/core.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
