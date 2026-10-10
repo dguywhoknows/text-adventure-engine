@@ -22,12 +22,12 @@ var THEMES = {
   },
 };
 var ITEMS = {
-  potion: { name: 'Healing Potion', icon: '🧪', use: 'heal 10 HP' },
-  bomb: { name: 'Firebomb', icon: '💣', use: 'deal 10 damage' },
-  blade: { name: 'Keen Blade', icon: '🗡️', passive: '+2 attack damage' },
-  shield: { name: 'Sturdy Shield', icon: '🛡️', passive: '+2 AC' },
-  lantern: { name: 'Lantern', icon: '🏮', passive: 'reveals what waits in nearby rooms' },
-  key: { name: 'Bone Key', icon: '🗝️', passive: 'opens the final door' },
+  potion: { name: 'Healing Potion', use: 'heal 10 HP' },
+  bomb: { name: 'Firebomb', use: 'deal 10 damage' },
+  blade: { name: 'Keen Blade', passive: '+2 attack damage' },
+  shield: { name: 'Sturdy Shield', passive: '+2 AC' },
+  lantern: { name: 'Lantern', passive: 'reveals what waits in nearby rooms' },
+  key: { name: 'Bone Key', passive: 'opens the final door' },
 };
 var N = 5;
 var DIRS = { north: [0, -1], south: [0, 1], west: [-1, 0], east: [1, 0] };
@@ -103,9 +103,9 @@ function roomDistances(rooms, sx, sy) {
 
 /* ---------- hero classes ---------- */
 var CLASSES = {
-  warrior: { name: 'Warrior', icon: '🛡️', hp: 30, hpPerLevel: 8, ac: 1, atk: 0, blurb: 'Tough and steady. Shrugs off hits.', ability: { name: 'Second Wind', desc: 'Heal 40% of max HP', cooldown: 6 } },
-  rogue: { name: 'Rogue', icon: '🗡️', hp: 22, hpPerLevel: 5, ac: 0, atk: 2, critOn: 19, blurb: 'Hits hard and crits often (19–20).', ability: { name: 'Backstab', desc: 'Guaranteed hit for double damage', cooldown: 5 } },
-  mage: { name: 'Mage', icon: '🔮', hp: 18, hpPerLevel: 4, ac: -1, atk: 1, blurb: 'Fragile, but commands raw arcane power.', ability: { name: 'Fireball', desc: 'Deal 12 + level damage, never misses', cooldown: 4 } },
+  warrior: { name: 'Warrior', hp: 30, hpPerLevel: 8, ac: 1, atk: 0, blurb: 'Tough and steady. Shrugs off hits.', ability: { name: 'Second Wind', desc: 'Heal 40% of max HP', cooldown: 6 } },
+  rogue: { name: 'Rogue', hp: 22, hpPerLevel: 5, ac: 0, atk: 2, critOn: 19, blurb: 'Hits hard and crits often (19–20).', ability: { name: 'Backstab', desc: 'Guaranteed hit for double damage', cooldown: 5 } },
+  mage: { name: 'Mage', hp: 18, hpPerLevel: 4, ac: -1, atk: 1, blurb: 'Fragile, but commands raw arcane power.', ability: { name: 'Fireball', desc: 'Deal 12 + level damage, never misses', cooldown: 4 } },
 };
 var XP_TABLE = [0, 12, 30, 55, 90, 140, 200];
 function xpForNext(lvl) { return XP_TABLE[lvl] || 200 + (lvl - 6) * 80; }

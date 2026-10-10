@@ -78,8 +78,8 @@ function enterRoom(first = false) {
   if (r.type === 'trap' && !r.sprung) {
     r.sprung = true;
     const roll = d(20) + G.lvl;
-    if (roll >= 13) { facts.trap = `a hidden trap triggers but the hero dodges (roll ${roll} vs 13)`; log(`🎲 Trap! Dodge roll ${roll} vs 13 → dodged`); }
-    else { const dmg = d(6); G.hp -= dmg; facts.trap = `a hidden trap hits the hero for ${dmg} damage (roll ${roll} vs 13)`; log(`🎲 Trap! Dodge roll ${roll} vs 13 → hit for ${dmg}`); }
+    if (roll >= 13) { facts.trap = `a hidden trap triggers but the hero dodges (roll ${roll} vs 13)`; log(`Trap! Dodge roll ${roll} vs 13 → dodged`); }
+    else { const dmg = d(6); G.hp -= dmg; facts.trap = `a hidden trap hits the hero for ${dmg} damage (roll ${roll} vs 13)`; log(`Trap! Dodge roll ${roll} vs 13 → hit for ${dmg}`); }
   }
   r.described = true;
   narrate(first ? 'arrive' : 'enter_room', facts).then(() => { if (G.hp <= 0) die('a trap'); });
@@ -109,8 +109,8 @@ function attack(bonusDmg = 0, label = 'attack') {
     const dmg = bonusDmg || d(6) + ATK() + (crit ? d(6) : 0);
     m.hp = Math.max(0, m.hp - dmg);
     facts.hero_hits = `${dmg} damage${crit && !bonusDmg ? ' (critical!)' : ''}`;
-    log(`🎲 ${bonusDmg ? label : `Attack ${roll}+${ATK()}=${total} vs AC ${m.ac}`} → hit for ${dmg} (${m.n} ${m.hp}/${m.max})`);
-  } else { facts.hero_misses = true; log(`🎲 Attack ${roll}+${ATK()}=${total} vs AC ${m.ac} → miss`); }
+    log(`${bonusDmg ? label : `Attack ${roll}+${ATK()}=${total} vs AC ${m.ac}`} → hit for ${dmg} (${m.n} ${m.hp}/${m.max})`);
+  } else { facts.hero_misses = true; log(`Attack ${roll}+${ATK()}=${total} vs AC ${m.ac} → miss`); }
   if (m.hp <= 0) return victory(m, facts);
   enemyTurn(facts);
   narrate('combat_round', facts).then(() => { if (G.hp <= 0) die(m.n); });
@@ -120,8 +120,8 @@ function attack(bonusDmg = 0, label = 'attack') {
 function enemyTurn(facts) {
   const m = here().monster;
   const roll = d(20) + m.tier + 1;
-  if (roll >= AC()) { const dmg = d(m.atk); G.hp -= dmg; facts.enemy_hits = `${dmg} damage`; log(`🎲 ${m.n} attacks ${roll} vs AC ${AC()} → you take ${dmg}`); }
-  else { facts.enemy_misses = true; log(`🎲 ${m.n} attacks ${roll} vs AC ${AC()} → miss`); }
+  if (roll >= AC()) { const dmg = d(m.atk); G.hp -= dmg; facts.enemy_hits = `${dmg} damage`; log(`${m.n} attacks ${roll} vs AC ${AC()} → you take ${dmg}`); }
+  else { facts.enemy_misses = true; log(`${m.n} attacks ${roll} vs AC ${AC()} → miss`); }
   facts.hero_hp = `${Math.max(0, G.hp)}/${G.max}`;
 }
 
@@ -132,7 +132,7 @@ function victory(m, facts) {
   P.seen[m.n] = P.seen[m.n] || Date.now();
   saveProfile();
   facts.enemy_defeated = true; facts.loot_gold = m.gold;
-  log(`☠ ${m.n} defeated · +${m.xp} XP · +${m.gold} gold`);
+  log(`${m.n} defeated · +${m.xp} XP · +${m.gold} gold`);
   const won = here().type === 'boss';
   levelCheck(facts);
   narrate(won ? 'final_victory' : 'enemy_defeated', facts).then(() => { if (won) end(true); });
@@ -143,7 +143,7 @@ function levelCheck(facts) {
   while (G.xp >= XP_NEXT()) {
     G.lvl++; G.max = heroStats(G.cls || 'warrior', G.lvl, G.inv, G.blessing).max; G.hp = G.max;
     facts.level_up = G.lvl;
-    log(`⬆ Level ${G.lvl}! Max HP ${G.max}, fully healed.`);
+    log(`Level ${G.lvl}! Max HP ${G.max}, fully healed.`);
   }
 }
 
@@ -151,13 +151,13 @@ function flee() {
   const roll = d(20) + G.lvl;
   const facts = { enemy: here().monster.n, action: 'flee' };
   if (roll >= 11 && G.prev) {
-    log(`🎲 Flee ${roll} vs 11 → escaped`);
+    log(`Flee ${roll} vs 11 → escaped`);
     facts.fled = true;
     [G.x, G.y] = G.prev;
     narrate('fled', facts);
     render();
   } else {
-    log(`🎲 Flee ${roll} vs 11 → caught!`);
+    log(`Flee ${roll} vs 11 → caught!`);
     facts.flee_failed = true;
     enemyTurn(facts);
     narrate('flee_failed', facts).then(() => { if (G.hp <= 0) die(here().monster.n); });
@@ -169,14 +169,14 @@ function useItem(it) {
   if (it === 'potion') {
     const heal = Math.min(10, G.max - G.hp);
     G.hp += heal; G.inv.splice(G.inv.indexOf('potion'), 1);
-    log(`🧪 You drink a potion: +${heal} HP`, 'you');
+    log(`You drink a potion: +${heal} HP`, 'you');
     const facts = { action: 'drinks a healing potion', healed: heal };
     if (inCombat()) enemyTurn(facts);
     narrate('use_item', facts).then(() => { if (G.hp <= 0) die(here().monster?.n || 'wounds'); });
   } else if (it === 'bomb') {
     if (!inCombat()) return toast('Save the firebomb for a fight', 'err');
     G.inv.splice(G.inv.indexOf('bomb'), 1);
-    log('💣 You hurl a firebomb!', 'you');
+    log('You hurl a firebomb!', 'you');
     attack(10, 'Firebomb');
     return;
   }
@@ -189,7 +189,7 @@ function loot() {
   G.gold += gold;
   if (item) G.inv.push(item);
   r.loot = null;
-  log(`💰 +${gold} gold${item ? ', found ' + ITEMS[item].name : ''}`, 'you');
+  log(`+${gold} gold${item ? ', found ' + ITEMS[item].name : ''}`, 'you');
   narrate('loot', { gold, item: item ? ITEMS[item].name : null, item_effect: item ? ITEMS[item].use || ITEMS[item].passive : null });
   render();
 }
@@ -198,8 +198,8 @@ function pray() {
   const r = here();
   r.used = true;
   const facts = { action: 'touches the shrine' };
-  if (G.hp < G.max * 0.6) { const heal = G.max - G.hp; G.hp = G.max; facts.result = `restores ${heal} HP`; log(`✨ Shrine heals you to full (+${heal})`); }
-  else { G.blessing++; facts.result = 'blesses the hero: +1 attack permanently'; log('✨ Shrine blessing: +1 attack'); }
+  if (G.hp < G.max * 0.6) { const heal = G.max - G.hp; G.hp = G.max; facts.result = `restores ${heal} HP`; log(`Shrine heals you to full (+${heal})`); }
+  else { G.blessing++; facts.result = 'blesses the hero: +1 attack permanently'; log('Shrine blessing: +1 attack'); }
   narrate('shrine', facts);
   render();
 }
@@ -207,7 +207,7 @@ function pray() {
 function search() {
   const r = here();
   const facts = { action: 'searches the room carefully' };
-  if (!r.searched && d(20) + G.lvl >= 12) { const g = d(8); G.gold += g; facts.found = `${g} hidden gold`; log(`🔍 Found ${g} hidden gold`); }
+  if (!r.searched && d(20) + G.lvl >= 12) { const g = d(8); G.gold += g; facts.found = `${g} hidden gold`; log(`Found ${g} hidden gold`); }
   else facts.found = 'nothing of value';
   r.searched = true;
   narrate('search', facts);
@@ -223,8 +223,8 @@ function rest() {
     const r = here();
     r.type = 'monster'; r.monster = { ...m, max: m.hp, tier: 1, xp: 4, gold: 3 };
     facts.ambush = m.n;
-    log(`⚠ Ambushed by a ${m.n} while resting!`);
-  } else { const heal = Math.min(G.max - G.hp, 4 + G.lvl); G.hp += heal; facts.healed = heal; log(`💤 Rested: +${heal} HP`); }
+    log(`Ambushed by a ${m.n} while resting!`);
+  } else { const heal = Math.min(G.max - G.hp, 4 + G.lvl); G.hp += heal; facts.healed = heal; log(`Rested: +${heal} HP`); }
   narrate('rest', facts);
   render();
 }
@@ -246,7 +246,7 @@ Rules: no item unless clearly plausible; enemy_damage only if in combat; failure
   G.hp = Math.min(G.max, G.hp + hp); G.gold += gold;
   if (out.item_used) { const k = Object.keys(ITEMS).find((k) => ITEMS[k].name.toLowerCase() === String(out.item_used).toLowerCase() || k === out.item_used); if (k && has(k) && k !== 'key') G.inv.splice(G.inv.indexOf(k), 1); }
   if (out.item_gained && ['potion', 'bomb'].includes(out.item_gained) && !G.freebie) { G.inv.push(out.item_gained); G.freebie = true; }
-  log(`⚖ ${out.success ? 'Success' : 'Failure'} · HP ${hp >= 0 ? '+' : ''}${hp}${gold ? ' · +' + gold + ' gold' : ''}${dmg ? ' · enemy −' + dmg : ''}`);
+  log(`${out.success ? 'Success' : 'Failure'} · HP ${hp >= 0 ? '+' : ''}${hp}${gold ? ' · +' + gold + ' gold' : ''}${dmg ? ' · enemy −' + dmg : ''}`);
   const el = log(out.narration || '', 'story');
   G.history.push({ role: 'user', content: 'Player: ' + text }, { role: 'assistant', content: el.textContent });
   if (combat && dmg) { m.hp = Math.max(0, m.hp - dmg); if (m.hp <= 0) return victory(m, { enemy: m.n, action: text }); }
@@ -258,14 +258,14 @@ Rules: no item unless clearly plausible; enemy_damage only if in combat; failure
 function die(cause) {
   if (G.over) return;
   G.over = true;
-  log(`💀 ${G.name} has fallen to ${cause}.`, 'room');
+  log(`${G.name} has fallen to ${cause}.`, 'room');
   recordRun(false, cause);
   narrate('death', { cause, level: G.lvl, gold: G.gold, rooms_explored: G.rooms.filter((r) => r.visited).length });
   render();
 }
 function end(won) {
   G.over = true;
-  log(won ? `🏆 Victory! ${G.name} escapes with ${G.gold} gold in ${G.steps} steps.` : 'Game over.', 'room');
+  log(won ? `Victory! ${G.name} escapes with ${G.gold} gold in ${G.steps} steps.` : 'Game over.', 'room');
   recordRun(won, won ? null : 'gave up');
   render();
 }
@@ -283,7 +283,7 @@ function render() {
   $('#xpBar').style.width = Math.min(100, (100 * G.xp) / XP_NEXT()) + '%';
   $('#xpText').textContent = `${G.xp}/${XP_NEXT()}`;
   $('#gold').textContent = G.gold; $('#ac').textContent = AC(); $('#atk').textContent = ATK(); $('#steps').textContent = G.steps;
-  $('#heroCls').textContent = `${CLASSES[G.cls || 'warrior'].icon} ${CLASSES[G.cls || 'warrior'].name}`;
+  $('#heroCls').textContent = `${CLASSES[G.cls || 'warrior'].name}`;
 
   const combat = inCombat();
   $('#enemyCard').classList.toggle('hidden', !combat);
@@ -298,7 +298,7 @@ function render() {
   $('#inv').innerHTML = '';
   Object.entries(counts).forEach(([k, n]) => {
     const it = ITEMS[k];
-    $('#inv').append(h('button', { class: 'btn', title: it.use || it.passive, disabled: G.over || !it.use, onclick: () => useItem(k) }, `${it.icon} ${it.name}${n > 1 ? ' ×' + n : ''}`));
+    $('#inv').append(h('button', { class: 'btn', title: it.use || it.passive, disabled: G.over || !it.use, onclick: () => useItem(k) }, `${it.name}${n > 1 ? ' ×' + n : ''}`));
   });
   if (!G.inv.length) $('#inv').append(h('span', { class: 'muted small' }, 'Empty'));
 
@@ -307,16 +307,16 @@ function render() {
   if (G.over) { acts.append(btn('▶ New adventure', () => { $('#game').classList.add('hidden'); $('#setup').classList.remove('hidden'); $('#seed').value = Math.floor(Math.random() * 1e9).toString(36); }, 'primary')); }
   else if (combat) {
     const A = CLASSES[G.cls || 'warrior'].ability;
-    acts.append(btn('⚔ Attack', () => attack(), 'primary'), btn(`${CLASSES[G.cls || 'warrior'].icon} ${A.name}${G.cd ? ` (${G.cd})` : ''}`, ability, G.cd ? 'ghost' : ''), btn('🏃 Flee', flee));
+    acts.append(btn('Attack', () => attack(), 'primary'), btn(`${A.name}${G.cd ? ` (${G.cd})` : ''}`, ability, G.cd ? 'ghost' : ''), btn('Flee', flee));
     acts.lastChild.previousSibling.disabled = !!G.cd;
     acts.lastChild.previousSibling.title = A.desc + (G.cd ? ` · ready in ${G.cd} moves` : '');
   }
   else {
-    Object.keys(r.doors).forEach((dir) => acts.append(btn({ north: '⬆ North', south: '⬇ South', west: '⬅ West', east: '➡ East' }[dir], () => move(dir))));
-    if (r.type === 'treasure' && r.loot) acts.append(btn('💰 Take treasure', loot, 'primary'));
-    if (r.type === 'shrine' && !r.used) acts.append(btn('✨ Touch shrine', pray, 'primary'));
-    if (r.type === 'boss' && !has('key') && r.monster.hp > 0) acts.append(h('span', { class: 'tag warn' }, '🔒 Find the key to face the boss'));
-    acts.append(btn('🔍 Search', search, 'ghost'), btn('💤 Rest', rest, 'ghost'));
+    Object.keys(r.doors).forEach((dir) => acts.append(btn({ north: 'North', south: 'South', west: 'West', east: 'East' }[dir], () => move(dir))));
+    if (r.type === 'treasure' && r.loot) acts.append(btn('Take treasure', loot, 'primary'));
+    if (r.type === 'shrine' && !r.used) acts.append(btn('Touch shrine', pray, 'primary'));
+    if (r.type === 'boss' && !has('key') && r.monster.hp > 0) acts.append(h('span', { class: 'tag warn' }, 'Find the key to face the boss'));
+    acts.append(btn('Search', search, 'ghost'), btn('Rest', rest, 'ghost'));
   }
   $('#freeForm').classList.toggle('hidden', G.over);
   drawMap();
@@ -333,8 +333,8 @@ function drawMap() {
     s += `<rect x="${x + 6}" y="${y + 6}" width="${S - 12}" height="${S - 12}" rx="5" fill="${fill}" stroke="var(--line)" stroke-dasharray="${r.visited ? '' : '3 3'}"/>`;
     if (r.doors.east) s += `<rect x="${x + S - 7}" y="${y + S / 2 - 3}" width="14" height="6" fill="var(--line)"/>`;
     if (r.doors.south) s += `<rect x="${x + S / 2 - 3}" y="${y + S - 7}" width="6" height="14" fill="var(--line)"/>`;
-    const icon = r.type === 'boss' ? '💀' : r.type === 'start' ? '🚪' : !r.visited && !has('lantern') ? '' : r.type === 'monster' && r.monster.hp > 0 ? '👹' : r.type === 'treasure' && r.loot ? '💰' : r.type === 'shrine' && !r.used ? '✨' : '';
-    if (icon) s += `<text x="${x + S / 2}" y="${y + S / 2 + 6}" text-anchor="middle" font-size="16">${icon}</text>`;
+    const icon = r.type === 'boss' ? 'B' : r.type === 'start' ? 'S' : !r.visited && !has('lantern') ? '' : r.type === 'monster' && r.monster.hp > 0 ? 'M' : r.type === 'treasure' && r.loot ? '$' : r.type === 'shrine' && !r.used ? '+' : '';
+    if (icon) s += `<text x="${x + S / 2}" y="${y + S / 2 + 6}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--muted)">${icon}</text>`;
   });
   s += `<circle cx="${P + G.x * S + S / 2}" cy="${P + G.y * S + S / 2}" r="9" fill="var(--accent)" stroke="#fff" stroke-width="2"><animate attributeName="r" values="8;10;8" dur="1.6s" repeatCount="indefinite"/></circle></svg>`;
   $('#map').innerHTML = s;
@@ -391,12 +391,12 @@ function ability() {
   const m = here().monster, A = CLASSES[G.cls].ability;
   if (G.cd) return;
   G.cd = A.cooldown;
-  log(`${CLASSES[G.cls].icon} ${A.name}!`, 'you');
+  log(`${A.name}!`, 'you');
   if (G.cls === 'warrior') {
     const heal = Math.min(G.max - G.hp, Math.round(G.max * 0.4));
     G.hp += heal;
     const facts = { action: 'uses Second Wind', healed: heal };
-    log(`💚 +${heal} HP`);
+    log(`+${heal} HP`);
     enemyTurn(facts);
     narrate('use_item', facts).then(() => { if (G.hp <= 0) die(m.n); });
     render();
@@ -414,7 +414,7 @@ function recordRun(won, cause) {
   run.score = runScore(run);
   P.runs.unshift(run);
   P.runs = P.runs.slice(0, 200);
-  newAchievements(P).forEach((id) => { P.achievements[id] = Date.now(); const a = ACHIEVEMENTS.find((x) => x.id === id); toast(`🏅 Achievement unlocked: ${a.name}`); });
+  newAchievements(P).forEach((id) => { P.achievements[id] = Date.now(); const a = ACHIEVEMENTS.find((x) => x.id === id); toast(`Achievement unlocked: ${a.name}`); });
   saveProfile();
   store.remove('save');
 }
@@ -427,7 +427,7 @@ function renderHeroes() {
     const runs = P.runs.filter((r) => r.cls === k), wins = runs.filter((r) => r.won).length;
     const st = heroStats(k, 1, [], 0), st5 = heroStats(k, 5, [], 0);
     box.append(h('div', { class: 'card stack hero' + ($('#heroClass').value === k ? ' picked' : '') },
-      h('div', { class: 'row between' }, h('h2', { style: 'margin:0' }, `${C.icon} ${C.name}`), h('span', { class: 'tag' }, `${wins}/${runs.length} wins`)),
+      h('div', { class: 'row between' }, h('h2', { style: 'margin:0' }, `${C.name}`), h('span', { class: 'tag' }, `${wins}/${runs.length} wins`)),
       h('p', { class: 'muted', style: 'margin:0' }, C.blurb),
       h('table', { class: 'mini' }, h('tr', {}, h('th', {}, ''), h('th', {}, 'Lv 1'), h('th', {}, 'Lv 5')),
         h('tr', {}, h('td', {}, 'Max HP'), h('td', {}, st.max), h('td', {}, st5.max)),
@@ -456,12 +456,12 @@ function renderBestiary() {
     box.append(h('div', { class: 'card stack beast' + (known ? '' : ' unknown') },
       h('div', { class: 'row between' }, h('h3', {}, known ? m.n : '???'), h('span', { class: 'tag ' + (m.tier === 'boss' ? 'bad' : '') }, m.tier === 'boss' ? 'boss' : 'tier ' + m.tier)),
       h('div', { class: 'small muted' }, THEMES[m.world].name),
-      known ? h('div', { class: 'row small' }, h('span', {}, `❤ ${m.hp}`), h('span', {}, `🛡 AC ${m.ac}`), h('span', {}, `⚔ d${m.atk}`), h('span', {}, `☠ ${kills[m.n] || 0} slain`)) : h('div', { class: 'small muted' }, 'Defeat one to reveal its stats.'),
+      known ? h('div', { class: 'row small' }, h('span', {}, `HP ${m.hp}`), h('span', {}, `AC ${m.ac}`), h('span', {}, `ATK d${m.atk}`), h('span', {}, `${kills[m.n] || 0} slain`)) : h('div', { class: 'small muted' }, 'Defeat one to reveal its stats.'),
       lore,
       known && !P.lore[m.n] ? h('button', { class: 'btn ghost sm', onclick: (e) => busy(e.currentTarget, async () => {
         P.lore[m.n] = await AI.chat([{ role: 'system', content: `Write a 2-3 sentence in-world bestiary entry in the tone of ${THEMES[m.world].tone}. Mention one tactical weakness. No markdown headings.` }, { role: 'user', content: `${m.n} (HP ${m.hp}, AC ${m.ac}, attack d${m.atk}) from ${THEMES[m.world].name}` }], { temperature: 0.9, demo: `Scholars of ${THEMES[m.world].name} whisper that the ${m.n} never strays far from where it fell. Its guard drops after it lunges, so strike right after it misses. *(demo lore)*` });
         saveProfile(); renderBestiary();
-      }) }, '📜 Write lore') : null));
+      }) }, 'Write lore') : null));
   });
 }
 
@@ -472,11 +472,11 @@ function renderChronicle() {
   const wins = P.runs.filter((r) => r.won).length;
   $('#cKpis').innerHTML = [['Runs', P.runs.length], ['Wins', wins], ['Win rate', P.runs.length ? Math.round((100 * wins) / P.runs.length) + '%' : '—'], ['Best score', P.runs.length ? Math.max(...P.runs.map((r) => r.score)) : '—'], ['Monsters slain', totalKills(P)]].map(([k, v]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
   const top = P.runs.slice().sort((a, b) => b.score - a.score).slice(0, 5);
-  $('#leaderboard').innerHTML = top.length ? top.map((r, i) => `<div class="list-item"><b class="mono">#${i + 1}</b><span class="grow">${esc(r.name)} · ${CLASSES[r.cls].icon} ${CLASSES[r.cls].name} · ${THEMES[r.theme].name}</span><span class="tag ${r.won ? 'good' : 'bad'}">${r.won ? 'won' : 'fell'}</span><b>${r.score}</b></div>`).join('') : '<div class="empty">No runs yet. Your best runs will appear here.</div>';
+  $('#leaderboard').innerHTML = top.length ? top.map((r, i) => `<div class="list-item"><b class="mono">#${i + 1}</b><span class="grow">${esc(r.name)} · ${CLASSES[r.cls].name} · ${THEMES[r.theme].name}</span><span class="tag ${r.won ? 'good' : 'bad'}">${r.won ? 'won' : 'fell'}</span><b>${r.score}</b></div>`).join('') : '<div class="empty">No runs yet. Your best runs will appear here.</div>';
   const tb = $('#runs');
   tb.innerHTML = '<tr><th>Date</th><th>Hero</th><th>World</th><th>Result</th><th>Lv</th><th>Gold</th><th>Steps</th><th>Rooms</th><th>Score</th><th></th></tr>';
   runs.forEach((r) => tb.append(h('tr', {},
-    h('td', { class: 'small' }, new Date(r.date).toLocaleString()), h('td', {}, `${CLASSES[r.cls].icon} ${r.name}`), h('td', {}, THEMES[r.theme].name),
+    h('td', { class: 'small' }, new Date(r.date).toLocaleString()), h('td', {}, `${r.name}`), h('td', {}, THEMES[r.theme].name),
     h('td', {}, h('span', { class: 'tag ' + (r.won ? 'good' : 'bad') }, r.won ? 'Victory' : 'Fell to ' + (r.cause || '?'))),
     h('td', {}, r.lvl), h('td', {}, r.gold), h('td', {}, r.steps), h('td', {}, r.rooms), h('td', {}, h('b', {}, r.score)),
     h('td', {}, h('button', { class: 'btn ghost sm', title: 'Play the same dungeon again', onclick: () => { $('#seed').value = r.seed.toString(36); $('#theme').value = r.theme; $('#heroClass').value = r.cls; Router.go('play'); if (!G || G.over) { $('#game').classList.add('hidden'); $('#setup').classList.remove('hidden'); } toast('Seed loaded: same dungeon layout'); } }, '↻ Replay seed')))));
@@ -487,7 +487,7 @@ function renderChronicle() {
 function renderAchievements() {
   const got = Object.keys(P.achievements).length;
   $('#achProgress').innerHTML = `<div class="bar"><span style="width:${(100 * got) / ACHIEVEMENTS.length}%"></span></div><p class="small muted" style="margin-top:6px">${got} of ${ACHIEVEMENTS.length} unlocked</p>`;
-  $('#achGrid').innerHTML = ACHIEVEMENTS.map((a) => `<div class="card ach ${P.achievements[a.id] ? 'got' : ''}"><div class="medal">${P.achievements[a.id] ? '🏅' : '🔒'}</div><div><b>${esc(a.name)}</b><div class="small muted">${esc(a.desc)}</div>${P.achievements[a.id] ? `<div class="small">Unlocked ${new Date(P.achievements[a.id]).toLocaleDateString()}</div>` : ''}</div></div>`).join('');
+  $('#achGrid').innerHTML = ACHIEVEMENTS.map((a) => `<div class="card ach ${P.achievements[a.id] ? 'got' : ''}"><div class="medal">${P.achievements[a.id] ? 'Earned' : 'Locked'}</div><div><b>${esc(a.name)}</b><div class="small muted">${esc(a.desc)}</div>${P.achievements[a.id] ? `<div class="small">Unlocked ${new Date(P.achievements[a.id]).toLocaleDateString()}</div>` : ''}</div></div>`).join('');
 }
 
 Router.on('heroes', renderHeroes);
@@ -496,3 +496,16 @@ Router.on('chronicle', renderChronicle);
 Router.on('achievements', renderAchievements);
 $('#bWorld').onchange = renderBestiary;
 $('#cFilter').onchange = renderChronicle;
+
+/* ================= AI command box ================= */
+const MOVES = { attack: () => attack(), ability: () => ability(), flee: () => flee(), search: () => search(), rest: () => rest(), loot: () => loot(), take: () => loot(), pray: () => pray(), shrine: () => pray() };
+Copilot.register({
+  context: () => { if (!G || $('#game').classList.contains('hidden')) return `No run in progress. Classes: ${Object.keys(CLASSES).join(', ')}. Worlds: ${Object.entries(THEMES).map(([k, t]) => `${k}=${t.name}`).join(', ')}.`; const r = here(), m = r.monster; return `${G.name} the ${CLASSES[G.cls].name}, level ${G.lvl}, HP ${G.hp}/${G.max}, gold ${G.gold}, inventory: ${G.inv.join(', ')}. Room: ${r.kind || r.type}, exits: ${Object.keys(r.doors).join(', ')}${inCombat() ? `. In combat with ${m.n} (${m.hp}/${m.max} HP)` : ''}${r.type === 'treasure' && r.loot ? '. Treasure here' : ''}${r.type === 'shrine' && !r.used ? '. Shrine here' : ''}.${G.over ? ' The run is over.' : ''}`; },
+  actions: [
+    { name: 'new_run', description: 'Create a hero and start a new run', params: { name: 'hero name', class: Object.keys(CLASSES).join(' | '), world: Object.keys(THEMES).join(' | '), seed: 'optional seed for a repeatable dungeon' },
+      run: ({ name, class: cls, world, seed }) => { Router.go('play'); if (name) $('#heroName').value = name; if (CLASSES[cls]) $('#heroClass').value = cls; if (THEMES[world]) $('#theme').value = world; if (seed) $('#seed').value = seed; $('#setup').classList.remove('hidden'); newGame(); return `${G.name} the ${CLASSES[G.cls].name} enters ${THEMES[G.theme].name}`; } },
+    { name: 'act', description: 'Take game moves in order. Each move is a direction (north/south/east/west), attack, ability, flee, search, rest, loot, pray, "use potion", "use bomb", or any free-form action in quotes-free words', params: { moves: 'array of moves, e.g. ["search", "north"]' },
+      run: async ({ moves }) => { if (!G || G.over) throw new Error('Start a run first'); Router.go('play'); const done = []; for (const raw of (Array.isArray(moves) ? moves : [moves]).slice(0, 8)) { if (G.over) break; const mv = String(raw).trim().toLowerCase().replace(/^(go|move|walk|head)\s+/, ''); if (DIRS[mv]) { if (!here().doors[mv]) { done.push(`no exit ${mv}`); continue; } if (inCombat()) { done.push('blocked: in combat'); continue; } move(mv); } else if (MOVES[mv]) MOVES[mv](); else if (/^(use|drink|throw)\s+(a\s+)?(potion|bomb|firebomb)/.test(mv)) { const k = /bomb/.test(mv) ? 'bomb' : 'potion'; if (!has(k)) { done.push(`no ${k}`); continue; } useItem(k); } else await freeAction(String(raw)); await narrating; done.push(mv); } render(); return `Did: ${done.join(', ')}. HP ${G.hp}/${G.max}${G.over ? '. The run ended.' : ''}`; } },
+    { name: 'run_history', query: true, description: 'Look up past runs, achievements and monsters met', params: {}, run: () => JSON.stringify({ runs: P.runs.slice(0, 15), achievements: Object.keys(P.achievements), monstersSeen: Object.keys(P.seen).length }) },
+  ],
+});

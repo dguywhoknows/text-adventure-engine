@@ -3,100 +3,81 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dungeon Narrator</title>
-<meta name="description" content="A roguelike where a real game engine owns the rules and an AI Dungeon Master narrates every moment.">
-<meta name="app-repo" content="https://github.com/dguywhoknows/text-adventure-engine">
-<meta name="app-version" content="2.0.0">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b4532a'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Arial%2CHelvetica%2Csans-serif' font-weight='700' font-size='13' fill='white'%3EDN%3C/text%3E%3C/svg%3E">
+<title>Dungeon Narrator: A real dungeon. A storyteller who never runs out of words</title>
+<meta name="description" content="A rules engine handles every roll, item and monster while an AI Dungeon Master narrates what happens.">
+<meta property="og:title" content="Dungeon Narrator">
+<meta property="og:description" content="A rules engine handles every roll, item and monster while an AI Dungeon Master narrates what happens.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b4532a'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='13' fill='white'%3EDN%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles/base.css">
-<link rel="stylesheet" href="styles/app.css">
+<link rel="stylesheet" href="styles/landing.css">
+<style>:root { --accent: #b4532a; }</style>
 </head>
-<body>
-<header class="topbar">
-  <div class="brand"><span class="logo" aria-hidden="true">DN</span><div><h1>Dungeon Narrator</h1><p>The engine rolls the dice. The AI tells the story.</p></div></div>
-  <nav class="topnav" data-nav aria-label="Pages"></nav>
-  <div class="top-actions"><a class="btn ghost sm" href="https://github.com/dguywhoknows/text-adventure-engine" target="_blank" rel="noopener">GitHub</a><span data-ai-badge></span></div>
+<body class="landing">
+<header class="l-nav">
+  <a class="l-brand" href="#top"><span class="logo">DN</span><b>Dungeon Narrator</b></a>
+  <nav aria-label="Sections"><a href="#demo">Demo</a><a href="#ask">Ask it</a><a href="#features">Features</a><a href="#faq">FAQ</a></nav>
+  <div class="l-nav-cta"><a class="btn primary" href="app.html">Open the app</a></div>
 </header>
-<div class="page active" data-page="play" data-title="Play">
 
-<div id="setup" class="setup card">
-  <h2>New adventure</h2>
-  <label>Hero name<input class="input" id="heroName" value="Rowan"></label>
-  <label>World<select id="theme">
-    <option value="crypt">Forgotten Crypt (dark fantasy)</option>
-    <option value="derelict">Derelict Starship (sci-fi horror)</option>
-    <option value="mansion">Hollow Mansion (gothic mystery)</option>
-  </select></label>
-  <label>Class<select id="heroClass"><option value="warrior">Warrior (tough)</option><option value="rogue">Rogue (critical hits)</option><option value="mage">Mage (fireball)</option></select></label>
-  <label>Seed <span class="muted small">(same seed = same dungeon)</span><input class="input mono" id="seed"></label>
-  <button class="btn primary" id="begin">Enter the dungeon</button>
-</div>
-
-<main id="game" class="game hidden">
-  <section class="card story-card">
-    <div id="log" class="log" aria-live="polite"></div>
-    <div id="actions" class="actions"></div>
-    <form id="freeForm" class="row free">
-      <input class="input grow" id="free" placeholder="Or try anything… e.g. “throw my torch at the cobwebs”" autocomplete="off">
-      <button class="btn" type="submit">Act</button>
-    </form>
+<main id="top">
+  <section class="l-hero">
+    <p class="l-kicker">Free · runs in your browser · AI built in</p>
+    <h1>A real dungeon. A storyteller who never runs out of words.</h1>
+    <p class="l-sub">A rules engine handles every roll, item and monster while an AI Dungeon Master narrates what happens.</p>
+    <div class="l-actions"><a class="btn primary big" href="app.html">Open the app</a><a class="btn big" href="#demo">See it working</a></div>
   </section>
-  <aside class="stack">
-    <div class="card">
-      <div class="row between"><div><h2 style="margin:0" id="heroTitle">Rowan</h2><div class="small muted" id="heroCls"></div></div><span class="tag" id="lvl">Lv 1</span></div>
-      <div class="meter"><span>HP</span><div class="bar hp"><span id="hpBar"></span></div><b id="hpText"></b></div>
-      <div class="meter"><span>XP</span><div class="bar xp"><span id="xpBar"></span></div><b id="xpText"></b></div>
-      <div class="row small" style="margin-top:8px;gap:14px"><span>🪙 <b id="gold">0</b></span><span>AC <b id="ac">10</b></span><span>⚔ +<b id="atk">0</b></span><span>👣 <b id="steps">0</b></span></div>
+
+  <section class="l-demo reveal" id="demo">
+    <div class="l-window"><div class="l-window-bar"><i></i><i></i><i></i><span>Dungeon Narrator</span></div>
+      <iframe src="app.html?embed=1" title="Dungeon Narrator live demo" loading="lazy"></iframe></div>
+    <p class="l-caption">This is the real app running below, not a recording. Try it.</p>
+  </section>
+
+  <section class="l-section reveal" id="ask">
+    <div class="l-head"><p class="l-kicker">Just say what you want</p><h2>Tell it in plain words. It uses its own tools to do it.</h2>
+      <p>Open the AI box in the app, type a request, and the AI drives the app's real features for you: it sets things up, edits, runs and reports back. Standing instructions let you shape every AI feature to how you like to work.</p></div>
+    <div class="l-prompts"><div class="l-prompt"><div class="say">Start a new run as a cautious rogue</div><div class="does">Creates the hero and begins the adventure.</div></div><div class="l-prompt"><div class="say">Search the room, then go north</div><div class="does">Sends both moves to the game engine in order.</div></div><div class="l-prompt"><div class="say">Narrate everything like a noir detective story</div><div class="does">Saves a standing style for the narrator.</div></div></div>
+  </section>
+
+  <section class="l-section reveal" id="features">
+    <div class="l-head"><p class="l-kicker">What it does</p><h2>Everything in one place</h2></div>
+    <div class="l-grid"><div class="l-card"><h3>Seeded procedural dungeons</h3><p>Randomized-DFS maze with extra loops, BFS-based difficulty scaling</p></div><div class="l-card"><h3>Three worlds</h3><p>Forgotten Crypt, Derelict Starship, Hollow Mansion</p></div><div class="l-card"><h3>D20 combat</h3><p>d20 combat with crits, AC, flee checks, traps, shrines, ambushes, leveling</p></div><div class="l-card"><h3>Inventory</h3><p>Inventory with consumables (potions, firebombs) and passives (blade, shield, lantern, key)</p></div><div class="l-card"><h3>Fog-of-war SVG minimap</h3><p>Fog-of-war SVG minimap</p></div><div class="l-card"><h3>Free-form actions</h3><p>AI adjudicates as JSON, engine clamps HP/gold/damage to keep the game fair</p></div><div class="l-card"><h3>Streaming narration</h3><p>Streaming narration with rolling story memory; autosave and resume</p></div><div class="l-card"><h3>Three hero classes</h3><p>Three hero classes (Warrior, Rogue, Mage) with distinct health, armor, attack, crit range and a cooldown-based ability (Second Wind, Backstab, Fireball)</p></div><div class="l-card"><h3>Heroes page comparing class stats at level 1</h3><p>Heroes page comparing class stats at level 1 and 5, including computed hit chances</p></div></div>
+  </section>
+
+  <section class="l-section reveal">
+    <div class="l-head"><p class="l-kicker">How it works</p><h2>Real engines where it counts, AI where it helps</h2></div>
+    <div class="l-steps">
+      <div><span>1</span><h3>Open the app</h3><p>No sign-up needed right now. Everything runs in your browser.</p></div>
+      <div><span>2</span><h3>Ask in your own words</h3><p>Type or click. The AI handles streaming narrator constrained to engine-provided facts (no invented loot or numbers); jSON adjudicator for free-form actions, sandboxed by engine-side clamping.</p></div>
+      <div><span>3</span><h3>Keep what you make</h3><p>Your work is saved in your browser and can be exported any time.</p></div>
     </div>
-    <div class="card hidden" id="enemyCard">
-      <div class="row between"><h2 style="margin:0" id="enemyName"></h2><span class="tag bad" id="enemyTier"></span></div>
-      <div class="meter"><span>HP</span><div class="bar ehp"><span id="ehpBar"></span></div><b id="ehpText"></b></div>
+    <p class="l-note">Computed locally, with no AI involved: dungeon generation, dice, combat, inventory, leveling, map, saves.</p>
+  </section>
+
+  <section class="l-section reveal" id="faq">
+    <div class="l-head"><p class="l-kicker">Questions</p><h2>Good to know</h2></div>
+    <div class="l-faq">
+      <details><summary>Is it free?</summary><p>Yes. Every feature is free. </p></details>
+      <details><summary>Where is my data stored?</summary><p>What you create stays in this browser on this device. You can export a backup or delete everything from Settings.</p></details>
+      <details><summary>Do I need an API key?</summary><p>Not to try it: the app runs in demo mode with sample AI output. For live AI, connect a free Groq or OpenRouter key in Settings.</p></details>
+      <details><summary>What can I type into the AI box?</summary><p>Anything you would ask a helpful colleague who knows the app, such as: "Start a new run as a cautious rogue". It plans the steps, runs the app's own functions and tells you what it did. The Instructions tab saves preferences every AI feature follows.</p></details>
+      <details><summary>Can I see the code?</summary><p>Yes. It is open source under the MIT license on <a href="https://github.com/dguywhoknows/text-adventure-engine" rel="noopener">GitHub</a>, with a <a href="tests/">public test suite</a>.</p></details>
     </div>
-    <div class="card"><h3>Inventory</h3><div id="inv" class="inv"></div></div>
-    <div class="card"><h3>Map</h3><div id="map"></div></div>
-  </aside>
-</main>
-</div>
-<div class="page" data-page="heroes" data-title="Heroes">
-<main class="stack">
-  <div class="page-head"><div><h2>Hero classes</h2><p>Each class trades health, armor and damage differently and has its own ability.</p></div></div>
-  <div class="grid cols-3" id="heroCards"></div>
-</main>
-</div>
+  </section>
 
-<div class="page" data-page="bestiary" data-title="Bestiary">
-<main class="stack">
-  <div class="page-head"><div><h2>Bestiary</h2><p id="bProgress"></p></div><select id="bWorld" style="width:auto"><option value="*">All worlds</option><option value="crypt">Forgotten Crypt</option><option value="derelict">Derelict Starship</option><option value="mansion">Hollow Mansion</option></select></div>
-  <div class="grid cols-3" id="bestiary"></div>
+  <section class="l-final reveal">
+    <h2>A real dungeon. A storyteller who never runs out of words.</h2>
+    <a class="btn primary big" href="app.html">Open the app</a>
+  </section>
 </main>
-</div>
 
-<div class="page" data-page="chronicle" data-title="Chronicle">
-<main class="stack">
-  <div class="kpis" id="cKpis"></div>
-  <div class="card"><h2>Leaderboard</h2><div id="leaderboard"></div></div>
-  <div class="card">
-    <div class="row between"><h2 style="margin:0">All runs</h2><select id="cFilter" style="width:auto"><option value="*">All</option><option value="won">Victories</option><option value="lost">Defeats</option><option value="crypt">Forgotten Crypt</option><option value="derelict">Derelict Starship</option><option value="mansion">Hollow Mansion</option></select></div>
-    <div class="table-wrap"><table id="runs"></table></div>
-  </div>
-</main>
-</div>
-
-<div class="page" data-page="achievements" data-title="Achievements">
-<main class="stack">
-  <div class="page-head"><div><h2>Achievements</h2></div></div>
-  <div id="achProgress"></div>
-  <div class="grid cols-2" id="achGrid"></div>
-</main>
-</div>
-
-<div class="page" data-page="settings" data-title="Settings"></div>
-<script src="src/lib/dom.js"></script>
-<script src="src/lib/ai.js"></script>
-<script src="src/lib/router.js"></script>
-<script src="src/core.js"></script>
-<script src="src/app.js"></script>
+<footer class="l-foot"><span>Dungeon Narrator</span><span><a href="https://github.com/dguywhoknows/text-adventure-engine" rel="noopener">Source</a> · <a href="tests/">Tests</a> · MIT license</span></footer>
+<script>
+document.querySelectorAll('.reveal').forEach((el) => el.classList.add('pre'));
+const io = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { x.target.classList.remove('pre'); io.unobserve(x.target); } }), { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
 </body>
 </html>
